@@ -62,17 +62,17 @@
             <svg class="w-32 h-32 text-black" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/></svg>
         </div>
 
-        <div id="main-container" class="flex flex-col items-center justify-center h-full w-full p-6 text-center space-y-4 md:space-y-8 z-20 overflow-y-auto">
+        <div id="main-container" class="flex flex-col items-center h-full w-full p-6 pt-8 text-center z-20 overflow-y-auto">
             
-            <div class="max-w-md w-full flex flex-col items-center space-y-6 pb-10">
+            <div class="max-w-md w-full flex flex-col items-center space-y-6 pb-20 my-auto">
                 
-                <div id="gif-container" class="w-56 h-56 bg-white rounded-3xl flex items-center justify-center overflow-hidden shadow-xl border-4 border-stone-200 transition-all duration-500 shrink-0">
+                <div id="gif-container" class="w-48 h-48 md:w-56 md:h-56 bg-white rounded-3xl flex items-center justify-center overflow-hidden shadow-xl border-4 border-stone-200 transition-all duration-500 flex-shrink-0">
                     <!-- Default GIF -->
                     <img id="current-gif" src="https://media.tenor.com/LqdcprR_n98AAAAj/kakaotalk-emoticon.gif" alt="GIF" class="w-full h-full object-contain p-2 transition-all duration-500">
                 </div>
 
-                <div class="min-h-[6rem] flex items-center justify-center w-full">
-                    <h2 id="typing-text" class="text-xl md:text-2xl font-medium text-stone-900 leading-relaxed tracking-tight"></h2>
+                <div class="min-h-[8rem] flex items-center justify-center w-full px-2">
+                    <h2 id="typing-text" class="text-lg md:text-xl lg:text-2xl font-medium text-stone-900 leading-relaxed tracking-tight"></h2>
                 </div>
 
                 <div id="interaction-area" class="w-full max-w-xs flex flex-col gap-4 opacity-0 transition-opacity duration-500">
@@ -160,14 +160,14 @@
             // STEP 2 (Index 2): Work (#work) 
             {
                 gif: "https://media.tenor.com/dopf4-hInqsAAAAj/itel-itelquby.gif", 
-                getText: () => `I'm a corporate worker based in Tangsel. Rutinitas? Nothing much, cuma berangkat-pulang kantor dan natap layar laptop sambil megang kepala (pusing dikit). Kalau bosen, biasanya nyusun jigsaw puzzle 1000 pcs (progress 1% per tahun) atau berkebun. Lagi coba hidroponik biar akhir bulan punya sawi buat makan mie (bukan sawit loh ya). Oh yes, I'm surviving college too :)`,
+                getText: () => `I'm a corporate worker based in Tangsel. Rutinitas? Nothing much, cuma berangkat-pulang kantor dan natap layar laptop sambil megang kepala (pusing dikit). Kalau bosen, biasanya nyusun jigsaw puzzle 1000 pcs (progress 1% per tahun) sambil megang kepala lagi. Kalau bosen megang kepala lagi, biasanya berkebun hidroponik biar akhir bulan punya sawi buat makan mie (bukan sawit loh ya). Oh yes, I'm surviving college too :)`,
                 btnText: "Sounds busy! What else? 🎵"
             },
             // STEP 3 (Index 3): Work (#caffeine) 
             {
                 gif: "https://media1.tenor.com/m/My3gK08AOq8AAAAC/quby-quby-sticker.gif", 
-                getText: () => `I'm definitely a caffeine addict. Kalau aku donor darah, curiga yang keluar bukan darah merah, tapi Iced Latte no sugar atau Americano. Tapi kalau lagi pengen yang manis-manis dikit, Tiramisu Latte atau Brown Sugar Latte are my comfyyy choices (tetep less sugar, biar gak giung). Eh, ${userName}, spill dong tempat WFC andalan kamu. Siapa tau kita bisa papasan di sana!`,
-                btnText: "Oke, noted!"
+                getText: () => `I'm definitely a caffeine addict. Kalau aku donor darah, curiga yang keluar bukan darah merah, tapi Iced Latte no sugar atau Americano. Kalau lagi pengen yang manis-manis dikit, kadang melipir ke Tiramisu Latte atau Brown Sugar Latte (tetep less sugar, biar gak giung). Eh, ${userName}, spill dong tempat WFC andalan kamu. Siapa tau kita bisa papasan di sana!`,
+                btnText: "Ok, noted! Wht abt music? 🎧"
             },
             // STEP 4 (Index 4): Music (#music)
             {
@@ -177,14 +177,14 @@
             },
             // STEP 5 (Index 5): Interests & Philosophy (#interest)
             {
-                gif: "https://media1.tenor.com/m/l3mGWOwmfu0AAAAd/quby-quby-sticker.gif", // Changed slightly to vary visuals
+                gif: "https://media1.tenor.com/m/l3mGWOwmfu0AAAAd/quby-quby-sticker.gif",
                 getText: () => `Bookworm yang hobi ketiduran pas baca. Kadang nulis prosa juga, yaa lumayan lah buat nambah-nambahin folder laptop. K-pop? Yess! Itzy, Blackpink (Rosé <3), Red Velvet. Western? Taylor Swift, Lany, Keshi (my comfort zone). Suka main gitar sambil nyanyi juga walau suaranya... ya adalah, anggap aja konser tunggal di kamar mandi.`,
                 btnText: "Wow, that got deep... 🤫"
             },
             // STEP 6 (Index 6): Capybara (#capybara)
             {
                 gif: "https://media.tenor.com/_iNTPDlgTgEAAAAi/coffee-bara-capybara.gifhttps://media1.tenor.com/m/Gkt2ziaacFUAAAAd/jennie-capybara-cat-capybara.gif", 
-                getText: () => `Spirit animal: Capybara. Santuy banget. I'd love to listen to ${userName}'s story. Pardon me if I fall asleep hehe, but trust me, I'm all ears and smiles for you. I could listen to you for hours... or forever (if I had time). Suka obrolan random tapi bisa juga deep talk sedalam samudra. Tau ga sih, Roro Jonggrang tuh bukan pikc me karena minta 1000 candi? Atau kenapa sih Kancil mulai mencuri timun?`,
+                getText: () => `Spirit animal: Capybara. Santuy banget. I'd love to listen to ${userName}'s story. Pardon me if I fall asleep hehe, but trust me, I'm all ears and smiles for you. I could listen to you for hours... or forever (if I had time). Suka obrolan random tapi bisa juga deep talk sedalam palung mariana. Tau ga sih, Roro Jonggrang tuh bukan pikc me karena minta 1000 candi? Atau kenapa sih Kancil mulai mencuri timun?`,
                 btnText: "Wait, tell me why? 🤔"
             },
             // STEP 7 (Index 7): Closing (#closing)
