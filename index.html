@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Knock Knock! Who's there?</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #fafaf9;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.8s forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .cursor-blink {
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Class khusus untuk tombol yang sedang kabur */
+        .runaway-mode {
+            position: fixed !important; 
+            transition: top 0.3s ease-out, left 0.3s ease-out, transform 0.2s;
+            z-index: 9999; 
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Custom Input Focus */
+        .custom-input:focus {
+            outline: none;
+            border-color: #1c1917;
+            box-shadow: 0 0 0 2px rgba(28, 25, 23, 0.1);
+        }
+        
+        .viewport-safe {
+            max-height: 100dvh;
+        }
+    </style>
+</head>
+<body class="w-full h-screen overflow-hidden relative text-stone-800 bg-stone-50">
+
+    <div class="w-full h-full flex flex-col relative overflow-hidden viewport-safe">
+        
+        <div class="w-full h-2 bg-stone-900 absolute top-0 left-0 z-10"></div>
+
+        <div class="absolute top-0 right-0 p-8 opacity-5 pointer-events-none">
+            <svg class="w-32 h-32 text-black" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/></svg>
+        </div>
+
+        <div id="main-container" class="flex flex-col items-center justify-center h-full w-full p-6 text-center space-y-4 md:space-y-8 z-20 overflow-y-auto">
+            
+            <div class="max-w-md w-full flex flex-col items-center space-y-6 pb-10">
+                
+                <div id="gif-container" class="w-56 h-56 bg-white rounded-3xl flex items-center justify-center overflow-hidden shadow-xl border-4 border-stone-200 transition-all duration-500 shrink-0">
+                    <!-- Default GIF -->
+                    <img id="current-gif" src="https://media.tenor.com/LqdcprR_n98AAAAj/kakaotalk-emoticon.gif" alt="GIF" class="w-full h-full object-contain p-2 transition-all duration-500">
+                </div>
+
+                <div class="min-h-[6rem] flex items-center justify-center w-full">
+                    <h2 id="typing-text" class="text-xl md:text-2xl font-medium text-stone-900 leading-relaxed tracking-tight"></h2>
+                </div>
+
+                <div id="interaction-area" class="w-full max-w-xs flex flex-col gap-4 opacity-0 transition-opacity duration-500">
+                    
+                    <!-- AREA 1: BUTTON AWAL: TRUE CONDITION (Knock Knock) -->
+                    <div id="step-0-buttons" class="flex flex-col gap-4 w-full">
+                        <button onclick="startFlow()" class="w-full py-4 bg-stone-900 hover:bg-black text-white text-lg rounded-2xl font-medium shadow-lg hover:shadow-stone-900/30 transform hover:-translate-y-1 transition-all duration-200">
+                            Open the door 🚪
+                        </button>
+                        <button onclick="triggerPersuade()" class="w-full py-4 bg-stone-200 hover:bg-stone-300 text-stone-700 text-lg rounded-2xl font-medium transform active:scale-95 transition-all">
+                            Meh, ignore it. 😒
+                        </button>
+                    </div>
+
+                    <!-- AREA 1.5: BUTTON AWAL: FALSE CONDITION (Hidden default) -->
+                    <div id="step-persuade-buttons" class="hidden flex flex-col gap-4 w-full">
+                        <button onclick="startFlow()" class="w-full py-4 bg-stone-900 hover:bg-black text-white text-lg rounded-2xl font-medium shadow-lg hover:shadow-stone-900/30 transform hover:-translate-y-1 transition-all duration-200">
+                            Ugh, fine. Open it. 🙄
+                        </button>
+                        <div class="relative w-full h-16">
+                            <button id="btn-runaway" class="w-full py-4 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-lg rounded-2xl font-medium transition-all">
+                                Idc, ignore it! 🏃💨
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- AREA 2: INPUT NAMA -->
+                    <div id="input-area" class="hidden w-full flex-col gap-3">
+                        <input type="text" id="user-name-input" placeholder="Your name here..." class="uppercase custom-input w-full px-5 py-4 rounded-2xl bg-white border-2 border-stone-200 text-stone-800 placeholder-stone-400 text-center text-lg transition-all" autocomplete="off">
+                        
+                        <div class="text-xs text-stone-400 italic px-2 leading-relaxed mt-2 flex items-start gap-2 justify-center">
+                            <span class="material-icons flex-shrink-0" style="font-size: 16px; margin-top: 1px;">info</span>
+                            <span class="text-left">
+                                <span class="text-stone-500 font-semibold not-italic">Disclaimer:</span> Don't worry, this data is stored locally in your browser and vanishes faster than your ex's promises when you refresh 👻
+                            </span>
+                        </div>
+
+                        <button onclick="submitName()" class="w-full mt-2 py-3 bg-stone-900 hover:bg-black text-white rounded-2xl font-medium shadow-md transition-all">
+                            Send it! 🚀
+                        </button>
+                    </div>
+
+                    <!-- AREA 3: TOMBOL NEXT -->
+                    <div id="next-button-area" class="hidden w-full">
+                        <button id="btn-next" onclick="nextStep()" class="w-full py-4 bg-stone-900 hover:bg-black text-white text-lg rounded-2xl font-medium shadow-lg hover:shadow-stone-900/30 transform hover:-translate-y-1 transition-all duration-200">
+                            Next
+                        </button>
+                    </div>
+
+                    <!-- AREA 4: FINAL BUTTONS -->
+                    <div id="final-buttons-area" class="hidden w-full flex-col gap-3">
+                        <a href="https://x.com/shapiruphirusa" target="_blank" class="block w-full py-4 bg-stone-900 hover:bg-black text-white text-lg rounded-2xl font-medium shadow-lg hover:shadow-stone-900/30 text-center transition-all">
+                            Let's be Moots! 🔗
+                        </a>
+                        <button onclick="alert('See you around! 👋')" class="w-full py-4 bg-white border-2 border-stone-200 hover:bg-stone-50 text-stone-600 text-lg rounded-2xl font-medium transition-all">
+                            Bye Pi! 👋
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        let userName = "Friend";
+        let currentStep = 0;
+        let typingInterval;
+
+        const narrativeSteps = [
+            // STEP 0 (Index 0): Welcome (#welcome)
+            {
+                gif: "https://media.tenor.com/-A4wmbt8xPoAAAAi/tkthao219-quby.gif", 
+                getText: () => `Halo, ${userName}! Thanks for dropping by. Seneng banget kamu mampir ke sini. Let's get to know about Pi.`,
+                btnText: "Okay, let's see! 👀"
+            },
+            // STEP 1 (Index 1): Intro Identity (#identity)
+            {
+                gif: "https://media.tenor.com/rtVW6InRHEgAAAAi/quby-cute.gif", 
+                getText: () => `Hi ${userName}. You can call me Pi, Piw, or whatever makes you comfy. I'd be happy if you gave me a nickname :) I use the pronouns “she/her,” and I am currently in my 20++ phase.`,
+                btnText: "Cool! What do you do? 💼"
+            },
+            // STEP 2 (Index 2): Work (#work) 
+            {
+                gif: "https://media.tenor.com/dopf4-hInqsAAAAj/itel-itelquby.gif", 
+                getText: () => `I'm a corporate worker based in Tangsel. Rutinitas? Nothing much, cuma berangkat-pulang kantor dan natap layar laptop sambil megang kepala (pusing dikit). Kalau bosen, biasanya nyusun jigsaw puzzle 1000 pcs (progress 1% per tahun) atau berkebun. Lagi coba hidroponik biar akhir bulan punya sawi buat makan mie (bukan sawit loh ya). Oh yes, I'm surviving college too :)`,
+                btnText: "Sounds busy! What else? 🎵"
+            },
+            // STEP 3 (Index 3): Music (#music)
+            {
+                gif: "https://media1.tenor.com/m/slGL-naMsGsAAAAC/looping-infinite-loop.gif", 
+                getText: () => `Music enthusiast here! Lagi suka banget sama Dere, she's so poetic. Speaking of Dere yang bilang manusia dari bulan, konon katanya aku dipungut di kolong jembatan :( Validasi dong, ${userName}, menurutmu aku asalnya dari mana?`,
+                btnText: "Haha same! Tell me more 📚"
+            },
+            // STEP 4 (Index 4): Interests & Philosophy (#interest)
+            {
+                gif: "https://media1.tenor.com/m/l3mGWOwmfu0AAAAd/quby-quby-sticker.gif", // Changed slightly to vary visuals
+                getText: () => `Bookworm yang hobi ketiduran pas baca. Kadang nulis prosa juga, yaa lumayan lah buat nambah-nambahin folder laptop. K-pop? Yess! Itzy, Blackpink (Rosé <3), Red Velvet. Western? Taylor Swift, Lany, Keshi (my comfort zone). Suka nyanyi juga walau suaranya... ya begitulah, anggap aja konser tunggal di kamar mandi.`,
+                btnText: "Wow, that got deep... 🤫"
+            },
+            // STEP 5 (Index 5): Capybara (#capybara)
+            {
+                gif: "https://media.tenor.com/_iNTPDlgTgEAAAAi/coffee-bara-capybara.gifhttps://media1.tenor.com/m/Gkt2ziaacFUAAAAd/jennie-capybara-cat-capybara.gif", 
+                getText: () => `Spirit animal: Capybara. Santuy banget. I'd love to listen to ${userName} story. Pardon me if I fall asleep hehe, but trust me, I'm all ears and smiles for you. I could listen to you for hours... or forever (if I had time). Suka obrolan random tapi bisa juga deep talk sedalam samudra. Tau ga sih, Roro Jonggrang tuh bukan pikc me karena minta 1000 candi? Atau kenapa si Kancil mulai mencuri timun?`,
+                btnText: "Wait, tell me why? 🤔"
+            },
+            // STEP 6 (Index 6): Closing (#closing)
+            {
+                gif: "https://media1.tenor.com/m/0c-HtVVFQbcAAAAC/cat-thank-you.gif", 
+                getText: () => `Ada banyak cerita lain yang belum tumpah di sini... \n\nAnyway, thank you for listening! Semoga harimu semanis gula jawa dan secerah layar HP bapak. Stay connected, okay?`,
+                btnText: "FINAL_STEP" 
+            }
+        ];
+
+        // --- UTILITY: TYPE WRITER EFFECT ---
+        const typeText = (elementId, text, speed = 35, callback) => {
+            const element = document.getElementById(elementId);
+            element.innerHTML = "";
+            let i = 0;
+            
+            if (typingInterval) clearInterval(typingInterval);
+            
+            typingInterval = setInterval(() => {
+                if (i < text.length) {
+                    if (text.substring(i, i + 6) === '<br />') {
+                        element.innerHTML += '<br>';
+                        i += 6;
+                    } else if (text.substring(i, i + 4) === '<br>') {
+                        element.innerHTML += '<br>';
+                        i += 4;
+                    } else if (text.charAt(i) === '\n') {
+                        element.innerHTML += '<br>';
+                        i++;
+                    } else {
+                        element.innerHTML += text.charAt(i);
+                        i++;
+                    }
+                } else {
+                    clearInterval(typingInterval);
+                    element.innerHTML += '<span class="cursor-blink">|</span>'; 
+                    if (callback) callback();
+                }
+            }, speed);
+        };
+
+        // --- NAVIGATION LOGIC ---
+        
+        // Handle URL Hash (Deep Linking)
+        const checkHash = () => {
+            const hash = window.location.hash;
+            const stepMap = {
+                '#welcome': 0,
+                '#identity': 1,
+                '#work': 2,
+                '#music': 3,
+                '#interest': 4,
+                '#capybara': 5,
+                '#closing': 6
+            };
+
+            if (stepMap.hasOwnProperty(hash)) {
+                document.getElementById("interaction-area").classList.remove("opacity-0");
+                document.getElementById("step-0-buttons").classList.add("hidden");
+                document.getElementById("input-area").classList.add("hidden");
+                document.getElementById("typing-text").innerHTML = ""; // Clear initial text
+                
+                renderStep(stepMap[hash]);
+                return true;
+            }
+            return false;
+        };
+
+        // 1. Initial State
+        window.onload = () => {
+            if (!checkHash()) {
+                setTimeout(() => {
+                    typeText("typing-text", "Knock knock...", 100, () => {
+                        document.getElementById("interaction-area").classList.remove("opacity-0");
+                    });
+                }, 500);
+            }
+        };
+
+        window.onhashchange = checkHash;
+
+        // 2. Persuade Logic
+        const triggerPersuade = () => {
+            document.getElementById("step-0-buttons").classList.add("hidden");
+            typeText("typing-text", "Are u sure? Maybe this is important...", 60, () => {
+                const stepPersuade = document.getElementById("step-persuade-buttons");
+                stepPersuade.classList.remove("hidden");
+                stepPersuade.classList.add("fade-in");
+                initRunawayBtn();
+            });
+        };
+
+        // 3. Start Main Flow
+        const startFlow = () => {
+            document.getElementById("step-0-buttons").classList.add("hidden");
+            document.getElementById("step-persuade-buttons").classList.add("hidden");
+            
+            const btnRunaway = document.getElementById("btn-runaway");
+            if (btnRunaway) {
+                btnRunaway.style.display = 'none';
+                if (btnRunaway.parentNode === document.body) {
+                    btnRunaway.parentNode.removeChild(btnRunaway);
+                }
+            }
+            
+            document.getElementById("current-gif").src = "https://media.tenor.com/fp0UOVXGsnIAAAAi/hi.gif"; 
+            
+            typeText("typing-text", "Yay, finally! I've been waiting. May I know the name of my special guest?", 40, () => {
+                const inputArea = document.getElementById("input-area");
+                inputArea.classList.remove("hidden");
+                inputArea.classList.add("fade-in");
+                document.getElementById("user-name-input").focus();
+            });
+        };
+
+        // 4. Submit Name Logic
+        const submitName = () => {
+            const input = document.getElementById("user-name-input");
+            const val = input.value.trim();
+            
+            if (val) {
+                userName = val.toUpperCase(); 
+                document.getElementById("input-area").classList.add("hidden");
+                renderStep(0); 
+            } else {
+                input.classList.add("border-red-400");
+                setTimeout(() => input.classList.remove("border-red-400"), 500);
+            }
+        };
+
+        // 5. Render Next Steps
+        const renderStep = (index) => {
+            currentStep = index;
+            const data = narrativeSteps[index];
+            const nextBtnArea = document.getElementById("next-button-area");
+            const finalBtnArea = document.getElementById("final-buttons-area");
+            
+            nextBtnArea.classList.add("hidden");
+            finalBtnArea.classList.add("hidden");
+            
+            document.getElementById("current-gif").src = data.gif;
+            
+            typeText("typing-text", data.getText(), 30, () => {
+                if (data.btnText === "FINAL_STEP") {
+                    finalBtnArea.classList.remove("hidden");
+                    finalBtnArea.classList.add("fade-in");
+                } else {
+                    document.getElementById("btn-next").innerText = data.btnText;
+                    nextBtnArea.classList.remove("hidden");
+                    nextBtnArea.classList.add("fade-in");
+                }
+            });
+        };
+
+        // 6. Next Button Handler
+        const nextStep = () => {
+            const nextIndex = currentStep + 1;
+            if (nextIndex < narrativeSteps.length) {
+                renderStep(nextIndex);
+            }
+        };
+
+        // --- Runaway Button Logic ---
+        const initRunawayBtn = () => {
+            const btn = document.getElementById("btn-runaway");
+            const jokes = ["Eits gak kena! 😝", "Kejar dong! 🏃", "Wkwk lambat!", "Nope! 👻", "Geser lagi~ 🐍"];
+
+            const runAway = (e) => {
+                e.preventDefault(); e.stopPropagation();
+                if (btn.parentNode !== document.body) {
+                    const rect = btn.getBoundingClientRect();
+                    btn.style.width = rect.width + 'px';
+                    btn.style.height = rect.height + 'px';
+                    document.body.appendChild(btn);
+                    btn.classList.add('runaway-mode');
+                }
+                
+                const safeMargin = 50;
+                const maxX = window.innerWidth - btn.offsetWidth - safeMargin;
+                const maxY = window.innerHeight - btn.offsetHeight - safeMargin;
+                const randomX = Math.max(safeMargin, Math.floor(Math.random() * Math.max(0, maxX)));
+                const randomY = Math.max(safeMargin, Math.floor(Math.random() * Math.max(0, maxY)));
+
+                btn.style.left = randomX + 'px';
+                btn.style.top = randomY + 'px';
+                
+                const randomText = jokes[Math.floor(Math.random() * jokes.length)];
+                btn.innerText = randomText;
+                
+                const colors = ['#e7e5e4', '#d6d3d1', '#f5f5f4']; 
+                btn.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                btn.style.color = '#1c1917';
+            };
+
+            btn.addEventListener('mouseover', runAway);
+            btn.addEventListener('touchstart', runAway);
+            btn.addEventListener('click', runAway);
+        };
+    </script>
+</body>
+</html>
