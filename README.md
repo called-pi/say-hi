@@ -10,9 +10,9 @@ Proyek ini berjalan berkat:
 
 - 🍜 Mie instan akhir bulan.
 
-- 💭 Imajinasi pas lagi bengong pas lagi kerja.
+- 💭 Imajinasi pas lagi bengong lagi kerja atau di toilet.
 
 Feel free to look around!
-Jangan sungkan buat nyapa. Semoga harimu semanis gula jawa dan secerah layar HP baru! ✨
+Jangan sungkan buat nyapa. Semoga harimu semanis gula jawa dan secerah layar HP bapak! ✨
 
 <i>Cheers 🥂</i>, Pi

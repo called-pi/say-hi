@@ -32,10 +32,41 @@
             50% { opacity: 0; }
         }
 
+        /* Image transition animations */
+        .img-fade-out {
+            animation: fadeOutScale 0.15s ease-out forwards;
+        }
+
+        .img-fade-in {
+            animation: fadeInScale 0.2s ease-in forwards;
+        }
+
+        @keyframes fadeOutScale {
+            from { 
+                opacity: 1; 
+                transform: scale(1);
+            }
+            to { 
+                opacity: 0; 
+                transform: scale(0.95);
+            }
+        }
+
+        @keyframes fadeInScale {
+            from { 
+                opacity: 0; 
+                transform: scale(0.95);
+            }
+            to { 
+                opacity: 1; 
+                transform: scale(1);
+            }
+        }
+
         /* Class khusus untuk tombol yang sedang kabur */
         .runaway-mode {
             position: fixed !important; 
-            transition: top 0.3s ease-out, left 0.3s ease-out, transform 0.2s;
+            transition: top 0.04s ease-out, left 0.04s ease-out, transform 0.03s;
             z-index: 9999; 
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
         }
@@ -66,9 +97,9 @@
             
             <div class="max-w-md w-full flex flex-col items-center space-y-6 pb-20 my-auto">
                 
-                <div id="gif-container" class="w-48 h-48 md:w-56 md:h-56 bg-white rounded-3xl flex items-center justify-center overflow-hidden shadow-xl border-4 border-stone-200 transition-all duration-500 flex-shrink-0">
+                <div id="gif-container" class="mt-8 w-48 h-48 md:w-56 md:h-56 bg-white rounded-2xl flex items-center justify-center shadow-xl border-4 border-stone-200 transition-all duration-500 flex-shrink-0">
                     <!-- Default GIF -->
-                    <img id="current-gif" src="https://media.tenor.com/LqdcprR_n98AAAAj/kakaotalk-emoticon.gif" alt="GIF" class="w-full h-full object-contain p-2 transition-all duration-500">
+                    <img id="current-gif" src="https://media.tenor.com/LqdcprR_n98AAAAj/kakaotalk-emoticon.gif" alt="GIF" class="h-full object-contain p-2 rounded-2xl transition-all duration-500">
                 </div>
 
                 <div class="min-h-[8rem] flex items-center justify-center w-full px-2">
@@ -183,7 +214,8 @@
             },
             // STEP 6 (Index 6): Capybara (#capybara)
             {
-                gif: "https://media.tenor.com/_iNTPDlgTgEAAAAi/coffee-bara-capybara.gifhttps://media1.tenor.com/m/Gkt2ziaacFUAAAAd/jennie-capybara-cat-capybara.gif", 
+                // gif: "https://media.tenor.com/_iNTPDlgTgEAAAAi/coffee-bara-capybara.gif", 
+                gif: "https://c.tenor.com/Gkt2ziaacFUAAAAd/tenor.gif",
                 getText: () => `Spirit animal: Capybara. Santuy banget. I'd love to listen to ${userName}'s story. Pardon me if I fall asleep hehe, but trust me, I'm all ears and smiles for you. I could listen to you for hours... or forever (if I had time). Suka obrolan random tapi bisa juga deep talk sedalam palung mariana. Tau ga sih, Roro Jonggrang tuh bukan pikc me karena minta 1000 candi? Atau kenapa sih Kancil mulai mencuri timun?`,
                 btnText: "Wait, tell me why? 🤔"
             },
@@ -228,6 +260,17 @@
 
         // --- NAVIGATION LOGIC ---
         
+        // Preload all GIFs for instant transitions
+        const preloadImages = () => {
+            narrativeSteps.forEach(step => {
+                const img = new Image();
+                img.src = step.gif;
+            });
+            // Also preload the initial flow GIF
+            const startImg = new Image();
+            startImg.src = "https://media.tenor.com/fp0UOVXGsnIAAAAi/hi.gif";
+        };
+        
         // Handle URL Hash (Deep Linking)
         const checkHash = () => {
             const hash = window.location.hash;
@@ -256,6 +299,9 @@
 
         // 1. Initial State
         window.onload = () => {
+            // Preload all GIFs immediately
+            preloadImages();
+            
             if (!checkHash()) {
                 setTimeout(() => {
                     typeText("typing-text", "Knock knock...", 100, () => {
@@ -322,11 +368,23 @@
             const data = narrativeSteps[index];
             const nextBtnArea = document.getElementById("next-button-area");
             const finalBtnArea = document.getElementById("final-buttons-area");
+            const gifElement = document.getElementById("current-gif");
             
             nextBtnArea.classList.add("hidden");
             finalBtnArea.classList.add("hidden");
             
-            document.getElementById("current-gif").src = data.gif;
+            // Smooth image transition (optimized timing)
+            gifElement.classList.add("img-fade-out");
+            
+            setTimeout(() => {
+                gifElement.src = data.gif;
+                gifElement.classList.remove("img-fade-out");
+                gifElement.classList.add("img-fade-in");
+                
+                setTimeout(() => {
+                    gifElement.classList.remove("img-fade-in");
+                }, 200);
+            }, 150);
             
             typeText("typing-text", data.getText(), 30, () => {
                 if (data.btnText === "FINAL_STEP") {
